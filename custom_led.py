@@ -2,9 +2,10 @@ import logging
 import sys
 import os
 
-from ledclient import LEDClient
-from protopy import led_pb2
+from ledclient import LEDClient, LEDColor
 
+IP = "127.0.0.1"
+PORT = 5005
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "info").upper(),
@@ -15,13 +16,7 @@ logging.basicConfig(
 
 
 if __name__ == "__main__":
-    led_client = LEDClient()
+    led_client = LEDClient(IP, PORT)
 
-    request = led_pb2.CustomLEDMessage()
-    pixels = request.set_leds.pixels
-    color = pixels.add()
-    color.red = 255
-    color.green = 0
-    color.blue = 0
-
-    led_client.send(request)
+    leds = [LEDColor(255, 0, 128)]
+    led_client.set_leds(leds)

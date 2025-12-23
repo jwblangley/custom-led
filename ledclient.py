@@ -1,22 +1,39 @@
 import socket
 import logging
 
+from dataclasses import dataclass
+
 from protopy import led_pb2
 
-IP = "127.0.0.1"
-PORT = 5005
 UDP_SIZE = 1472
 
 
+@dataclass
+class LEDColor:
+    red: int
+    green: int
+    blue: int
+
+
 class LEDClient:
-    def __init__(self):
+    def __init__(self, ip, port):
+        self.ip = ip
+        self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def send(self, message: led_pb2.CustomLEDMessage):
+    def set_leds(self, leds: list[LEDColor]):
+        request = led_pb2.CustomLEDMessage()
+        pixels = request.set_leds.pixels
+        for led in leds:
+            pixels.add(red=led.red, green=led.green, blue=led.blue)
+
+        self._send(request)
+
+    def _send(self, message: led_pb2.CustomLEDMessage):
         logging.debug(f"Sending {message.WhichOneof('choice')}")
         request_bytes = message.SerializeToString()
         if len(request_bytes) > UDP_SIZE:
             logging.warning(
                 f"Sending a request_bytes that exceeds a single UDP packet. {len(request_bytes)=}"
             )
-        self.sock.sendto(request_bytes, (IP, PORT))
+        self.sock.sendto(request_bytes, (self.ip, self.port))
