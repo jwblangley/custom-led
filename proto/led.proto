@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package customled;
+
+message Color {
+  int32 red = 1;
+  int32 green = 2;
+  int32 blue = 3;
+}
+
+message SetLEDs {
+  repeated Color pixels = 1;
+}
+
+message CustomLEDMessage {
+  oneof choice {
+    SetLEDs set_leds = 1;
+  }
+}
