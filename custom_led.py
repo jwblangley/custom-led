@@ -2,7 +2,7 @@ import logging
 import sys
 import os
 
-from common import LEDClient
+from ledclient import LEDClient
 from protopy import led_pb2
 
 
