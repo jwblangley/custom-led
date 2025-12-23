@@ -1,5 +1,6 @@
 import argparse
 import cv2
+import logging
 import sys
 
 from queue import SimpleQueue
@@ -13,6 +14,13 @@ TEXT_THICKNESS = 1
 SELECTED_RADIUS = 5
 SELECTED_THICKNESS = 2
 SELECTED_COLOR = (0, 0, 255)  # BGR
+
+logging.basicConfig(
+    level=os.environ.get("LOG_LEVEL", "info").upper(),
+    stream=sys.stdout,
+    format="%(asctime)s.%(msecs)03d %(filename)s:%(lineno)d %(levelname)s %(message)s",
+    datefmt="%Y-%d-%j %H:%M:%S",
+)
 
 selected_leds = []
 event_queue = SimpleQueue()
@@ -38,7 +46,7 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        print("Error: Could not open camera.")
+        logging.error("Error: Could not open camera.")
         sys.exit(2)
 
     cv2.namedWindow(NAMED_WINDOW)
@@ -76,10 +84,10 @@ if __name__ == "__main__":
             break
 
     if len(selected_leds) != args.num_leds:
-        print("Incorrect number of LEDs selected. Aborting")
+        logging.error("Incorrect number of LEDs selected. Aborting")
         sys.exit(1)
 
     cap.release()
     cv2.destroyAllWindows()
 
-    print(selected_leds)
+    logging.info(selected_leds)
