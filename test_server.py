@@ -30,7 +30,7 @@ class LEDManager:
 
         if len(set_leds.pixels) > len(self.leds):
             logging.error(
-                f"Request to set more LEDs than configured. request={len(leds)}, configured={len(self.leds)}"
+                f"Request to set more LEDs than configured. request={len(set_leds.pixels)}, configured={len(self.leds)}"
             )
             return
 
