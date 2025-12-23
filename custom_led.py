@@ -5,7 +5,7 @@ import os
 from ledclient import LEDClient, LEDColor
 
 IP = "127.0.0.1"
-PORT = 5005
+PORT = 8000
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "info").upper(),

@@ -2,8 +2,11 @@ import argparse
 import cv2
 import logging
 import sys
+import os
 
 from queue import SimpleQueue
+
+from ledclient import LEDClient, LEDColor
 
 NAMED_WINDOW = "LED Selector: Live Preview"
 
@@ -14,6 +17,8 @@ TEXT_THICKNESS = 1
 SELECTED_RADIUS = 5
 SELECTED_THICKNESS = 2
 SELECTED_COLOR = (0, 0, 255)  # BGR
+
+LED_COLOR = LEDColor(255, 255, 255)
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "info").upper(),
@@ -34,6 +39,8 @@ def record_click(event, x, y, flags, param):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LED location selector")
+    parser.add_argument("ip", type=str, help="IP address of server")
+    parser.add_argument("port", type=int, help="Server port")
     parser.add_argument("num_leds", type=int, help="Number of LEDs to locate")
     parser.add_argument(
         "-vc",
@@ -43,6 +50,10 @@ if __name__ == "__main__":
         help="Index of video capture device",
     )
     args = parser.parse_args()
+
+    led_client = LEDClient(args.ip, args.port)
+    led_client.clear()
+    led_client.set_leds([LED_COLOR])
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -59,6 +70,10 @@ if __name__ == "__main__":
 
         while not event_queue.empty():
             selected_leds.append(event_queue.get())
+            if len(selected_leds) < args.num_leds:
+                led_client.set_leds(
+                    [LEDColor(0, 0, 0)] * len(selected_leds) + [LED_COLOR]
+                )
 
         for i, (x, y) in enumerate(selected_leds):
             cv2.circle(

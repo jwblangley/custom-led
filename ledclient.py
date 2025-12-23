@@ -29,9 +29,15 @@ class LEDClient:
 
         self._send(request)
 
+    def clear(self):
+        request = led_pb2.CustomLEDMessage()
+        request.clear.SetInParent()
+        self._send(request)
+
     def _send(self, message: led_pb2.CustomLEDMessage):
         logging.debug(f"Sending {message.WhichOneof('choice')}")
         request_bytes = message.SerializeToString()
+        logging.debug(f"{len(request_bytes)=}")
         if len(request_bytes) > UDP_SIZE:
             logging.warning(
                 f"Sending a request_bytes that exceeds a single UDP packet. {len(request_bytes)=}"
