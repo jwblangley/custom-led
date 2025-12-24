@@ -1,9 +1,9 @@
 .PHONY: python-proto clean
 
-python-proto:
-	@mkdir -p ./protopy
-	protoc -I=proto --python_out=./protopy ./proto/*.proto
-	@touch ./protopy/__init__.py
+proto_python: proto/*.proto
+	@mkdir -p ./proto_python
+	protoc -I=proto --python_out=./proto_python ./proto/*.proto
+	@touch ./proto_python/__init__.py
 
 clean:
-	rm -rf ./protopy/*_pb2.py
+	rm -rf ./proto_python/*_pb2.py

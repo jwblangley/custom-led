@@ -6,7 +6,7 @@ import argparse
 
 from pprint import pformat
 
-from protopy import led_pb2
+from proto_python import led_pb2
 
 IP = "127.0.0.1"
 PORT = 8000
@@ -24,18 +24,20 @@ logging.basicConfig(
 class LEDManager:
     def __init__(self, num_leds):
         self.num_leds = num_leds
+        self.led_locations = None
         self.clear()
 
     def clear(self):
         logging.info("Clearing LEDs")
         self.leds = [(0, 0, 0)] * self.num_leds
+        logging.debug(pformat(self.leds))
 
     def set(self, set_leds: led_pb2.SetLEDs):
         logging.info("Setting LEDs")
 
         if len(set_leds.pixels) > self.num_leds:
             logging.error(
-                f"Request to set more LEDs than configured. request={len(set_leds.pixels)}, configured={self.num_leds}"
+                f"Request to set more LEDs than available. request={len(set_leds.pixels)}, available={self.num_leds}"
             )
             return
 
@@ -64,10 +66,12 @@ if __name__ == "__main__":
             message = led_pb2.CustomLEDMessage()
             message.ParseFromString(data)
 
-            match message.WhichOneof("choice"):
+            match choice := message.WhichOneof("choice"):
                 case "set_leds":
                     led_manager.set(message.set_leds)
                 case "clear":
                     led_manager.clear()
+                case _:
+                    logging.error(f"Unexpected request type: {choice}")
     except KeyboardInterrupt:
         logging.info("Shutting down")

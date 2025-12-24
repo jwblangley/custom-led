@@ -105,4 +105,5 @@ if __name__ == "__main__":
     cap.release()
     cv2.destroyAllWindows()
 
+    led_client.clear()
     logging.info(selected_leds)

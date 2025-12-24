@@ -3,7 +3,7 @@ import logging
 
 from dataclasses import dataclass
 
-from protopy import led_pb2
+from proto_python import led_pb2
 
 UDP_SIZE = 1472
 
