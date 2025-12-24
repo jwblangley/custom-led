@@ -3,10 +3,11 @@ import cv2
 import logging
 import sys
 import os
+import json
 
 from queue import SimpleQueue
 
-from ledclient import LEDClient, LEDColor
+from ledclient import LEDClient, LEDColor, CONFIG_FILE
 
 NAMED_WINDOW = "LED Selector: Live Preview"
 
@@ -106,4 +107,10 @@ if __name__ == "__main__":
     cv2.destroyAllWindows()
 
     led_client.clear()
-    logging.info(selected_leds)
+
+    logging.info("All LEDs located")
+    logging.debug(selected_leds)
+
+    logging.info("Writing configuration to disk")
+    with open(CONFIG_FILE, "w") as outfile:
+        json.dump(LEDClient.normalise_bbox(selected_leds), outfile)
