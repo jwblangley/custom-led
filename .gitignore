@@ -1,3 +1,5 @@
 venv
 proto_python
 __pycache__
+
+arduino/network_credentials.h
