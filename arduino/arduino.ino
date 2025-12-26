@@ -1,8 +1,12 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
+// Generated proto
+#include <led.pb.h>
+
 // This file is excluded from the git working tree for secuity reasons
 #include "network_credentials.h"
+
 
 #define PORT 8000
 #define UDP_MAX 1478
