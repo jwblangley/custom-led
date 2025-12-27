@@ -13,7 +13,7 @@ void LEDManager::init()
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(d_leds, NUM_LEDS)
            .setCorrection(TypicalLEDStrip);
 
-    FastLED.setBrightness(50);
+    FastLED.setBrightness(50); // Out of 255
 }
 
 void LEDManager::clear(const Clear& clear)
