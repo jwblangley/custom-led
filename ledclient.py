@@ -1,4 +1,3 @@
-import math
 import socket
 import logging
 
@@ -49,4 +48,3 @@ class LEDClient:
                 f"Sending a request_bytes that exceeds a single UDP packet. {len(request_bytes)=}"
             )
         self.sock.sendto(request_bytes, (self.ip, self.port))
-

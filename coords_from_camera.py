@@ -34,6 +34,14 @@ selected_leds = []
 event_queue = SimpleQueue()
 
 
+def list_cameras(max_cameras=10):
+    for i in range(max_cameras):
+        cap = cv2.VideoCapture(i)
+
+        if cap.isOpened():
+            logging.info(f"Camera index {i:02d} found...")
+
+
 def record_click(event, x, y, flags, param):
     global event_queue
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -57,9 +65,11 @@ if __name__ == "__main__":
     led_client.clear()
     led_client.set_leds([LED_COLOR])
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(args.video_capture)
     if not cap.isOpened():
         logging.error("Error: Could not open camera.")
+        print("list camera")
+        list_cameras()
         sys.exit(2)
 
     cv2.namedWindow(NAMED_WINDOW)
