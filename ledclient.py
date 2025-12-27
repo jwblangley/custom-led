@@ -9,6 +9,7 @@ from proto_python import led_pb2
 UDP_SIZE = 1472
 
 CONFIG_FILE = "led_config.json"
+NUM_LEDS = 50
 
 
 @dataclass
@@ -25,6 +26,8 @@ class LEDClient:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def set_leds(self, leds: list[LEDColor]):
+        if len(leds) > NUM_LEDS:
+            raise ValueError(f"A maximum of {NUM_LEDS} is supported")
         request = led_pb2.CustomLEDMessage()
         pixels = request.set_leds.pixels
         for led in leds:
