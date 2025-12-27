@@ -89,6 +89,16 @@ if __name__ == "__main__":
 
         frame_size = (frame.shape[1], frame.shape[0])
 
+        if not ret:
+            break
+
+        logging.debug(f"{frame_size=}")
+        leds = [map_coords(led_bbox, frame_size, (x, y)) for x, y in led_config]
+        leds = [frame[y, x].tolist() for x, y in leds]
+        leds = [LEDColor(r, g, b) for b, g, r in leds]
+
+        led_client.set_leds(leds)
+
         if args.preview:
             cv2.rectangle(
                 frame,
@@ -101,13 +111,5 @@ if __name__ == "__main__":
             cv2.imshow("preview", frame)
             if cv2.waitKey(1) & 0xFF == ord(" "):
                 cv2.waitKey(0)
-        if not ret:
-            break
 
-        logging.debug(f"{frame_size=}")
-        leds = [map_coords(led_bbox, frame_size, (x, y)) for x, y in led_config]
-        leds = [frame[y, x].tolist() for x, y in leds]
-        leds = [LEDColor(r, g, b) for b, g, r in leds]
-
-        led_client.set_leds(leds)
         time.sleep(max((1 / fps) - (time.perf_counter() - start_t), 0))
