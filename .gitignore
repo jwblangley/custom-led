@@ -3,6 +3,8 @@ proto_python
 __pycache__
 
 led_config.json
+*.txt
+*.mp4
 
 **/*credentials*
 
