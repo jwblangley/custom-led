@@ -9,6 +9,9 @@ import math
 
 from ledclient import LEDClient, LEDColor
 
+SELECTED_THICKNESS = 5
+SELECTED_COLOR = (0, 0, 255)  # BGR
+
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "info").upper(),
     stream=sys.stdout,
@@ -32,9 +35,9 @@ def bbox(coords):
     return ((x_min, y_min), (x_max, y_max))
 
 
-def map_coords(in_bbox, out_maxes, in_xy, scale):
-    x_ratio = in_bbox[1][0] * scale / out_maxes[0]
-    y_ratio = in_bbox[1][1] * scale / out_maxes[1]
+def map_coords(in_bbox, out_maxes, in_xy):
+    x_ratio = in_bbox[1][0] / out_maxes[0]
+    y_ratio = in_bbox[1][1] / out_maxes[1]
 
     logging.debug(f"{x_ratio=}")
     logging.debug(f"{y_ratio=}")
@@ -42,11 +45,11 @@ def map_coords(in_bbox, out_maxes, in_xy, scale):
     if x_ratio > 1 or y_ratio > 1:
         raise ValueError("Scale is too large for video")
 
-    x_pad = (out_maxes[0] - (in_bbox[1][0] - in_bbox[0][0]) * scale) / 2
-    y_pad = (out_maxes[1] - (in_bbox[1][1] - in_bbox[0][1]) * scale) / 2
+    x_pad = (out_maxes[0] - (in_bbox[1][0] - in_bbox[0][0])) / 2
+    y_pad = (out_maxes[1] - (in_bbox[1][1] - in_bbox[0][1])) / 2
 
-    ret_x = x_pad + scale * (in_xy[0] - in_bbox[0][0])
-    ret_y = y_pad + scale * (in_xy[1] - in_bbox[0][1])
+    ret_x = x_pad + (in_xy[0] - in_bbox[0][0])
+    ret_y = y_pad + (in_xy[1] - in_bbox[0][1])
 
     assert ret_x <= out_maxes[0]
     assert ret_y <= out_maxes[1]
@@ -62,6 +65,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--scale", type=float, help="Scale bounding box", default=1.0, required=False
     )
+    parser.add_argument("--preview", action="store_true")
     args = parser.parse_args()
 
     led_client = LEDClient(args.ip, args.port)
@@ -81,15 +85,28 @@ if __name__ == "__main__":
     while True:
         start_t = time.perf_counter()
         ret, frame = cap.read()
+        frame = cv2.resize(frame, (0, 0), fx=(1 / args.scale), fy=(1 / args.scale))
+
+        frame_size = (frame.shape[1], frame.shape[0])
+
+        if args.preview:
+            cv2.rectangle(
+                frame,
+                map_coords(led_bbox, frame_size, led_bbox[0]),
+                map_coords(led_bbox, frame_size, led_bbox[1]),
+                SELECTED_COLOR,
+                SELECTED_THICKNESS,
+            )
+
+            cv2.imshow("preview", frame)
+            if cv2.waitKey(1) & 0xFF == ord(" "):
+                cv2.waitKey(0)
         if not ret:
             break
 
-        frame_size = frame.shape[:2]
         logging.debug(f"{frame_size=}")
-        leds = [
-            frame[*map_coords(led_bbox, frame_size, (x, y), args.scale)].tolist()
-            for x, y in led_config
-        ]
+        leds = [map_coords(led_bbox, frame_size, (x, y)) for x, y in led_config]
+        leds = [frame[y, x].tolist() for x, y in leds]
         leds = [LEDColor(r, g, b) for b, g, r in leds]
 
         led_client.set_leds(leds)
