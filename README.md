@@ -5,3 +5,4 @@ TODO
 ## Microcontroller
 
 * <https://docs.arduino.cc/arduino-cli/getting-started>
+* FastLED

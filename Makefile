@@ -27,7 +27,7 @@ proto-arduino: nanopb
 	cp $(NANOPB_DIR)/pb.h $(ARDUINO_DIR)/src/proto/pb.h
 
 compile: arduino/*.ino proto-arduino
-	arduino-cli compile --fqbn $(BOARD) $(ARDUINO_DIR) --build-property build.extra_flags="-I$(ARDUINO_DIR)/src/proto"
+	arduino-cli compile --fqbn $(BOARD) $(ARDUINO_DIR) --build-property build.extra_flags="-DESP32 -D__ESP32__ -I$(ARDUINO_DIR)/src/proto"
 
 upload:
 	arduino-cli upload -p $(USB_PORT) --fqbn $(BOARD) $(ARDUINO_DIR)

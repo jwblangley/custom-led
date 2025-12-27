@@ -12,7 +12,6 @@
 #include "src/led_manager.h"
 
 
-#define NUM_LEDS 50
 #define PORT 8000
 #define UDP_MAX 1478
 #define BAUD 115200
@@ -20,7 +19,7 @@
 WiFiUDP udp;
 unsigned char packetBuffer[UDP_MAX];
 
-LEDManager ledManager(NUM_LEDS);
+LEDManager ledManager;
 
 void setup() {
   Serial.begin(BAUD);
@@ -37,6 +36,9 @@ void setup() {
 
   udp.begin(PORT);
   Serial.printf("UDP server started on port %d\n", PORT);
+
+  Serial.println("Initialising LED Manager");
+  ledManager.init();
 }
 
 void loop() {
