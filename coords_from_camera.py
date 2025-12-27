@@ -114,4 +114,4 @@ if __name__ == "__main__":
 
     logging.info("Writing configuration to disk")
     with open(CONFIG_FILE, "w") as outfile:
-        json.dump(LEDClient.normalise_bbox(selected_leds), outfile)
+        json.dump(selected_leds, outfile)
