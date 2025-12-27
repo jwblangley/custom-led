@@ -1,19 +1,26 @@
+#include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
 // Generated proto
 #include <led.pb.h>
+#include <pb_decode.h>
 
 // This file is excluded from the git working tree for secuity reasons
-#include "network_credentials.h"
+#include "src/network_credentials.h"
+
+#include "src/led_manager.h"
 
 
+#define NUM_LEDS 50
 #define PORT 8000
 #define UDP_MAX 1478
 #define BAUD 115200
 
 WiFiUDP udp;
-char packetBuffer[UDP_MAX];
+unsigned char packetBuffer[UDP_MAX];
+
+LEDManager ledManager(NUM_LEDS);
 
 void setup() {
   Serial.begin(BAUD);
@@ -34,12 +41,31 @@ void setup() {
 
 void loop() {
   const int packetSize = udp.parsePacket();
-  if (packetSize) {
+  if (packetSize > 0) {
     const int len = udp.read(packetBuffer, UDP_MAX);
 
     Serial.printf("Received %d bytes from %s, port %d\n",
                   packetSize,
                   udp.remoteIP().toString().c_str(),
                   udp.remotePort());
+
+    CustomLEDMessage request;
+    pb_istream_t stream = pb_istream_from_buffer(packetBuffer, len);
+    if (pb_decode(&stream, CustomLEDMessage_fields, &request))
+    {
+      switch (request.which_choice)
+      {
+        case CustomLEDMessage_set_leds_tag:
+          ledManager.setLEDs(request.choice.set_leds);
+          break;
+        case CustomLEDMessage_clear_tag:
+          ledManager.clear(request.choice.clear);
+          break;
+      }
+    }
+    else
+    {
+      Serial.printf("Decode error: %s\n", PB_GET_ERROR(&stream));
+    }
   }
 }

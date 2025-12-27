@@ -16,18 +16,18 @@ nanopb:
 	test -d $(NANOPB_DIR) || git clone https://github.com/nanopb/nanopb.git $(NANOPB_DIR)
 
 proto-arduino: nanopb
-	mkdir --parents $(ARDUINO_DIR)/proto
-	protoc -I=proto --plugin=protoc-gen-nanopb=$(NANOPB_DIR)/generator/protoc-gen-nanopb --nanopb_out=$(ARDUINO_DIR)/proto $(PROTO_DIR)/*.proto
-	cp $(NANOPB_DIR)/pb_common.c $(ARDUINO_DIR)/proto/pb_common.c
-	cp $(NANOPB_DIR)/pb_common.h $(ARDUINO_DIR)/proto/pb_common.h
-	cp $(NANOPB_DIR)/pb_decode.c $(ARDUINO_DIR)/proto/pb_decode.c
-	cp $(NANOPB_DIR)/pb_decode.h $(ARDUINO_DIR)/proto/pb_decode.h
-	cp $(NANOPB_DIR)/pb_encode.c $(ARDUINO_DIR)/proto/pb_encode.c
-	cp $(NANOPB_DIR)/pb_encode.h $(ARDUINO_DIR)/proto/pb_encode.h
-	cp $(NANOPB_DIR)/pb.h $(ARDUINO_DIR)/proto/pb.h
+	mkdir --parents $(ARDUINO_DIR)/src/proto
+	protoc -I=proto --plugin=protoc-gen-nanopb=$(NANOPB_DIR)/generator/protoc-gen-nanopb --nanopb_out=$(ARDUINO_DIR)/src/proto $(PROTO_DIR)/*.proto
+	cp $(NANOPB_DIR)/pb_common.c $(ARDUINO_DIR)/src/proto/pb_common.c
+	cp $(NANOPB_DIR)/pb_common.h $(ARDUINO_DIR)/src/proto/pb_common.h
+	cp $(NANOPB_DIR)/pb_decode.c $(ARDUINO_DIR)/src/proto/pb_decode.c
+	cp $(NANOPB_DIR)/pb_decode.h $(ARDUINO_DIR)/src/proto/pb_decode.h
+	cp $(NANOPB_DIR)/pb_encode.c $(ARDUINO_DIR)/src/proto/pb_encode.c
+	cp $(NANOPB_DIR)/pb_encode.h $(ARDUINO_DIR)/src/proto/pb_encode.h
+	cp $(NANOPB_DIR)/pb.h $(ARDUINO_DIR)/src/proto/pb.h
 
 compile: arduino/*.ino proto-arduino
-	arduino-cli compile --fqbn $(BOARD) $(ARDUINO_DIR) --build-property build.extra_flags="-I$(ARDUINO_DIR)/proto"
+	arduino-cli compile --fqbn $(BOARD) $(ARDUINO_DIR) --build-property build.extra_flags="-I$(ARDUINO_DIR)/src/proto"
 
 upload:
 	arduino-cli upload -p $(USB_PORT) --fqbn $(BOARD) $(ARDUINO_DIR)

@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package customled;
-
 message Color {
   int32 red = 1;
   int32 green = 2;

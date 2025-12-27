@@ -2,8 +2,11 @@ venv
 proto_python
 __pycache__
 
-arduino/network_credentials.h
-arduino/proto
+led_config.json
+
+**/*credentials*
+
+arduino/src/proto
 
 nanopb/
 
