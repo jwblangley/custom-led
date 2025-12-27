@@ -14,17 +14,23 @@ void LEDManager::init()
            .setCorrection(TypicalLEDStrip);
 
     FastLED.setBrightness(50);
-
-    d_leds[0] = CRGB::Red;
-    FastLED.show();
 }
 
 void LEDManager::clear(const Clear& clear)
 {
     Serial.println("Clearing LEDs");
+    FastLED.clear();
+    FastLED.show();
 }
 
 void LEDManager::setLEDs(const SetLEDs& setLEDs)
 {
     Serial.println("Setting LEDs");
+    FastLED.clear();
+    for (int i = 0; i < setLEDs.pixels_count; i++)
+    {
+        const Color& pixel = setLEDs.pixels[i];
+        d_leds[i] = CRGB(pixel.red, pixel.green, pixel.blue);
+    }
+    FastLED.show();
 }

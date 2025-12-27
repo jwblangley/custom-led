@@ -17,7 +17,7 @@ nanopb:
 
 proto-arduino: nanopb
 	mkdir --parents $(ARDUINO_DIR)/src/proto
-	protoc -I=proto --plugin=protoc-gen-nanopb=$(NANOPB_DIR)/generator/protoc-gen-nanopb --nanopb_out=$(ARDUINO_DIR)/src/proto $(PROTO_DIR)/*.proto
+	protoc -I=proto -I$(NANOPB_DIR)/generator/proto --plugin=protoc-gen-nanopb=$(NANOPB_DIR)/generator/protoc-gen-nanopb --nanopb_out=$(ARDUINO_DIR)/src/proto $(PROTO_DIR)/*.proto
 	cp $(NANOPB_DIR)/pb_common.c $(ARDUINO_DIR)/src/proto/pb_common.c
 	cp $(NANOPB_DIR)/pb_common.h $(ARDUINO_DIR)/src/proto/pb_common.h
 	cp $(NANOPB_DIR)/pb_decode.c $(ARDUINO_DIR)/src/proto/pb_decode.c

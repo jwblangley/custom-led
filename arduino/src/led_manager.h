@@ -8,7 +8,7 @@
 #define LED_PIN     16
 #define NUM_LEDS    50
 #define LED_TYPE    WS2811
-#define COLOR_ORDER GRB
+#define COLOR_ORDER RGB
 
 class LEDManager
 {

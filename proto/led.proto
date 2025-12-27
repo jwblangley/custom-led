@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "nanopb.proto";
+
 message Color {
   int32 red = 1;
   int32 green = 2;
@@ -7,7 +9,7 @@ message Color {
 }
 
 message SetLEDs {
-  repeated Color pixels = 1;
+  repeated Color pixels = 1 [(nanopb).max_count = 50];
 }
 
 message Clear {
