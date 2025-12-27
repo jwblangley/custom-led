@@ -19,6 +19,8 @@ SELECTED_RADIUS = 5
 SELECTED_THICKNESS = 2
 SELECTED_COLOR = (0, 0, 255)  # BGR
 
+NUM_LEDS = 50
+
 LED_COLOR = LEDColor(255, 255, 255)
 
 logging.basicConfig(
@@ -42,7 +44,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LED location selector")
     parser.add_argument("ip", type=str, help="IP address of server")
     parser.add_argument("port", type=int, help="Server port")
-    parser.add_argument("num_leds", type=int, help="Number of LEDs to locate")
     parser.add_argument(
         "-vc",
         "--video-capture",
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 
         while not event_queue.empty():
             selected_leds.append(event_queue.get())
-            if len(selected_leds) < args.num_leds:
+            if len(selected_leds) < NUM_LEDS:
                 led_client.set_leds(
                     [LEDColor(0, 0, 0)] * len(selected_leds) + [LED_COLOR]
                 )
@@ -94,12 +95,12 @@ if __name__ == "__main__":
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-        if len(selected_leds) == args.num_leds:
+        if len(selected_leds) == NUM_LEDS:
             cv2.imshow(NAMED_WINDOW, frame)
             cv2.waitKey(0)
             break
 
-    if len(selected_leds) != args.num_leds:
+    if len(selected_leds) != NUM_LEDS:
         logging.error("Incorrect number of LEDs selected. Aborting")
         sys.exit(1)
 
